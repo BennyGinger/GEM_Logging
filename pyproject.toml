@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gem-logging = "gem_logging:main"
+gem-logging = "gem_logging:log_config"
 
 [build-system]
 requires = ["hatchling"]

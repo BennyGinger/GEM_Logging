@@ -6,18 +6,36 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+# Module level flag to indicate if the logging has been configured
+LOGGING_CONFIGURED = False
+CWD = Path.cwd().parent.resolve()
+
 def _load_env():
     # look for the one .env in your repo root (cwd or above)
-    here = Path.cwd().resolve()
-    for p in (here, *here.parents):
+    for p in (CWD, *CWD.parents):
         f = p / ".env"
         if f.is_file():
             load_dotenv(str(f), override=False)
             return
 
-def configure():
+def configure_logging():
+    """
+    Configures the logging system for the application.
+    This function sets up the logging configuration based on environment variables
+    and ensures that the logging system is only configured once.
+    """
+    global LOGGING_CONFIGURED
+    if LOGGING_CONFIGURED:
+        return
+    LOGGING_CONFIGURED = True
+        
+    # Load environment variables from .env file
     _load_env()
+    
+    # Extract env variable for log level, default to INFO if not set
     lvl = os.getenv("LOG_LEVEL", "INFO").upper()
+    
+    # Set the logging configuration
     cfg = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -48,4 +66,6 @@ def configure():
             "level": lvl,
         },
     }
+    
+    # Configure the logging system
     logging.config.dictConfig(cfg)
